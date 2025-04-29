@@ -1,0 +1,26 @@
+{
+  "name": "demo-ts-sdk",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "transfer:recover": "npx tsx src/scripts/tx-recover.ts",
+    "create:wrapped": "npx tsx src/scripts/create-wrapped.ts",
+    "transfer:Stoken": "npx tsx src/scripts/tokenTransferSolana.ts",
+    "transfer:Atoken": "npx tsx src/scripts/tokenTransferAvalanche.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@wormhole-foundation/sdk": "^1.15.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.3"
+  }
+}
