@@ -3,6 +3,8 @@ import {
   Network,
   TokenId,
   TokenTransfer,
+  transferWithPayloadLayout,
+  encoding,
   Wormhole,
   amount,
   isTokenId,
@@ -11,7 +13,7 @@ import {
 
 import evm from "@wormhole-foundation/sdk/evm";
 import solana from "@wormhole-foundation/sdk/solana";
-import { SignerStuff, getSigner } from "../helpers/helpers";
+import { SignerStuff, getSigner, waitLog } from "../helpers/helpers";
 
 (async function () {
   // Init Wormhole object, passing config for which network
@@ -69,15 +71,11 @@ import { SignerStuff, getSigner } from "../helpers/helpers";
 
   // Set this to true if you want to perform a round trip transfer
   const roundTrip: boolean = false;
-
-  // Set this to the transfer txid of the initiating transaction to recover a token transfer
-  // And attempt to fetch details about its progress.
+  2;
   let recoverTxid = undefined;
 
-  // Finally create and perform the transfer given the parameters set above
   const xfer = !recoverTxid
-    ? // Perform the token transfer
-      await tokenTransfer(
+    ? await tokenTransfer(
         wh,
         {
           token,
@@ -99,10 +97,9 @@ import { SignerStuff, getSigner } from "../helpers/helpers";
         txid: recoverTxid,
       });
 
-  //   const receipt = await waitLog(wh, xfer);
-
-  //   // Log out the results
-  //   console.log(receipt);
+  const receipt = await waitLog(wh, xfer);
+  // Log out the results
+  console.log(receipt);
 })();
 
 async function tokenTransfer<N extends Network>(

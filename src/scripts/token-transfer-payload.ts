@@ -3,6 +3,8 @@ import {
   Network,
   TokenId,
   TokenTransfer,
+  transferWithPayloadLayout,
+  encoding,
   Wormhole,
   amount,
   isTokenId,
@@ -11,7 +13,7 @@ import {
 
 import evm from "@wormhole-foundation/sdk/evm";
 import solana from "@wormhole-foundation/sdk/solana";
-import { SignerStuff, getSigner } from "../helpers/helpers";
+import { SignerStuff, getSigner, waitLog } from "../helpers/helpers";
 
 (async function () {
   // Init Wormhole object, passing config for which network
@@ -19,13 +21,13 @@ import { SignerStuff, getSigner } from "../helpers/helpers";
   const wh = await wormhole("Testnet", [evm, solana]);
 
   // Grab chain Contexts -- these hold a reference to a cached rpc client
-  const sendChain = wh.getChain("Solana");
-  const rcvChain = wh.getChain("Avalanche");
+  const sendChain = wh.getChain("Avalanche");
+  const rcvChain = wh.getChain("Solana");
 
   // Shortcut to allow transferring native gas token
   const token = Wormhole.tokenId(
     sendChain.chain,
-    "DYNNfeLj8gZXzndGt5z5N9poKBh23C39CdcbBYmk8VcB"
+    "0xE66b9BBB3DFf4d4444F7Dbb6c7BB4a110d1d91a3"
   );
 
   // A TokenId is just a `{chain, address}` pair and an alias for ChainAddress
@@ -42,7 +44,7 @@ import { SignerStuff, getSigner } from "../helpers/helpers";
   // Note: The Token bridge will dedust past 8 decimals
   // This means any amount specified past that point will be returned
   // To the caller
-  const amt = "5";
+  const amt = "10";
 
   // With automatic set to true, perform an automatic transfer. This will invoke a relayer
   // Contract intermediary that knows to pick up the transfers
@@ -69,15 +71,13 @@ import { SignerStuff, getSigner } from "../helpers/helpers";
 
   // Set this to true if you want to perform a round trip transfer
   const roundTrip: boolean = false;
-
-  // Set this to the transfer txid of the initiating transaction to recover a token transfer
-  // And attempt to fetch details about its progress.
+  2;
   let recoverTxid = undefined;
 
-  // Finally create and perform the transfer given the parameters set above
+  const payload = encoding.bytes.encode("Hello World!");
+
   const xfer = !recoverTxid
-    ? // Perform the token transfer
-      await tokenTransfer(
+    ? await tokenTransfer(
         wh,
         {
           token,
@@ -90,6 +90,7 @@ import { SignerStuff, getSigner } from "../helpers/helpers";
               ? amount.units(amount.parse(nativeGas, decimals))
               : undefined,
           },
+          payload,
         },
         roundTrip
       )
@@ -99,10 +100,9 @@ import { SignerStuff, getSigner } from "../helpers/helpers";
         txid: recoverTxid,
       });
 
-  //   const receipt = await waitLog(wh, xfer);
-
-  //   // Log out the results
-  //   console.log(receipt);
+  const receipt = await waitLog(wh, xfer);
+  // Log out the results
+  console.log(receipt);
 })();
 
 async function tokenTransfer<N extends Network>(
