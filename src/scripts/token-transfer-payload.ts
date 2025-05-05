@@ -3,7 +3,6 @@ import {
   Network,
   TokenId,
   TokenTransfer,
-  transferWithPayloadLayout,
   encoding,
   Wormhole,
   amount,
